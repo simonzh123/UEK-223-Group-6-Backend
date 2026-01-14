@@ -37,3 +37,10 @@ VALUES ('d29e709c-0ff1-4f4c-a7ef-09f656c390f1', '2ebf301e-6c61-4076-98e3-2a38b31
 ('ab505c92-7280-49fd-a7de-258e618df074', '76d2cbf6-5845-470e-ad5f-2edb9e09a868'),
 ('c6aee32d-8c35-4481-8b3e-a876a39b0c02', '21c942db-a275-43f8-bdd6-d048c21bf5ab')
  ON CONFLICT DO NOTHING;
+
+--ENTRIES
+INSERT INTO list_entry(id, title, text, importance, user_id, created_at)
+VALUES ('afa13c84-d3c2-4b37-96f4-b5e50b94601d', 'example 1.0', 'very important message!', 'HIGH', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
+       ('0ce10a45-644d-4500-ac1c-b867ca663d13', 'example 2.0', 'hello everyone', 'MEDIUM', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
+       ('be1732af-093e-496f-9c54-9aad6382f886', 'example 3.0', 'hello people, this is unimportant', 'LOW', 'ba804cb9-fa14-42a5-afaf-be488742fc54', now())
+    ON CONFLICT DO NOTHING;
