@@ -1,0 +1,44 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity users {
+  id : uuid <<PK>>
+  first_name : varchar(255)
+  last_name : varchar(255)
+  email : varchar(255)
+  password : varchar(255)
+}
+entity role {
+  id : uuid <<PK>>
+  name : varchar(255)
+}
+entity authority {
+  id : uuid <<PK>>
+  name : varchar(255)
+}
+entity users_role {
+  users_id : uuid <<FK>>
+  role_id : uuid <<FK>>
+}
+entity role_authority {
+  role_id : uuid <<FK>>
+  authority_id : uuid <<FK>>
+}
+entity list_entry {
+  id : uuid <<PK>>
+  title : varchar(255)
+  text : varchar(255)
+  importance : varchar(255)
+  created_at : timestamp(6)
+  user_id : uuid <<FK>>
+}
+
+users ||--o{ users_role
+role  ||--o{ users_role
+
+role ||--o{ role_authority
+authority ||--o{ role_authority
+
+users ||--o{ list_entry : owns
+@enduml
