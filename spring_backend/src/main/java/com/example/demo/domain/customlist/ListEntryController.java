@@ -38,6 +38,7 @@ public class ListEntryController {
     @GetMapping
     @PreAuthorize("hasAuthority('USER_READ')")
     public ResponseEntity<List<ListEntryDTO>> getAllEntries() {
+        List<ListEntry> entries = entryService.getAllEntries();
         return new ResponseEntity<>(entryMapper.toDTOs(entries), HttpStatus.OK);
     }
 
@@ -54,7 +55,7 @@ public class ListEntryController {
 
     @GetMapping("/user")
     public ResponseEntity<List<ListEntryDTO>> getEntriesByUser() {
-        List<ListEntry> entries = entryService.getEntriesByUser(id);
+        List<ListEntry> entries = entryService.getEntriesByUser(getMailFromJWT());
         return new ResponseEntity<>(entryMapper.toDTOs(entries), HttpStatus.OK);
     }
 
