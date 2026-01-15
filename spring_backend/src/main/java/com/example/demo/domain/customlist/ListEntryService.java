@@ -1,27 +1,29 @@
 package com.example.demo.domain.customlist;
 
+import com.example.demo.core.generic.AbstractServiceImpl;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class ListEntryService {
+public class ListEntryService extends AbstractServiceImpl<ListEntry> {
 
     private final ListEntryRepository repository;
 
     public ListEntryService(ListEntryRepository Repository) {
         this.repository = Repository;
+        super.repository = Repository;
     }
 
     public List<ListEntry> getAllEntries() {
-        return repository.findAll();
+        return findAll();
     }
 
-    public Optional<ListEntry> getEntryById(UUID id) {
-        return repository.findById(id);
+    public ListEntry getEntryById(UUID id) {
+        return findById(id);
     }
 
     public List<ListEntry> getEntriesByUser(UUID userId) {
@@ -41,11 +43,11 @@ public class ListEntryService {
 
     @Transactional
     public void deleteEntryById(UUID id) {
-        repository.deleteById(id);
+        deleteById(id);
     }
 
     @Transactional
     public ListEntry saveEntry(ListEntry listEntry) {
-        return repository.save(listEntry);
+        return save(listEntry);
     }
 }

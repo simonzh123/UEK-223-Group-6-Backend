@@ -1,12 +1,12 @@
 package com.example.demo.domain.customlist;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.core.generic.AbstractRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ListEntryRepository extends JpaRepository<ListEntry, UUID> {
+public interface ListEntryRepository extends AbstractRepository<ListEntry> {
     // TODO: Add filtering options
     List<ListEntry> findAllByUserId(UUID userId);
 }

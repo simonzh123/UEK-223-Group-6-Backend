@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Validated
@@ -31,9 +30,12 @@ public class ListEntryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ListEntry>> getEntryById(@PathVariable UUID id) {
-        Optional<ListEntry> entry = entryService.getEntryById(id);
-        return ResponseEntity.ok(entry);
+    public ResponseEntity<ListEntry> getEntryById(@PathVariable UUID id) {
+        try {
+            return ResponseEntity.ok(entryService.getEntryById(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/user/{id}")
