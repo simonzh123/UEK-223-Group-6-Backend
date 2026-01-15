@@ -1,18 +1,22 @@
 package com.example.demo.domain.customlist;
 
+import com.example.demo.domain.user.User;
+import com.example.demo.domain.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.*;
 
 @Service
 public class ListEntryService {
 
+    private final  UserService userService;
+
     private final ListEntryRepository repository;
 
-    public ListEntryService(ListEntryRepository Repository) {
+    public ListEntryService(UserService userService, ListEntryRepository Repository) {
+        this.userService = userService;
         this.repository = Repository;
     }
 
@@ -20,16 +24,17 @@ public class ListEntryService {
         return repository.findAll();
     }
 
-    public Optional<ListEntry> getEntryById(UUID id) {
-        return repository.findById(id);
+    public ListEntry getEntryById(UUID id) throws Exception {
+        return repository.findById(id).orElseThrow(Exception::new);
     }
 
-    public List<ListEntry> getEntriesByUser(UUID userId) {
+    public List<ListEntry> getEntriesByUser(String email) {
+        UUID userId = userService.getUserByMail(email).getId();
         return repository.findAllByUserId(userId);
     }
 
     @Transactional
-    public void updateEntry(ListEntry oldEntry) {
+    public ListEntry updateEntry(ListEntry oldEntry) throws NoSuchElementException {
         ListEntry updatedEntry = repository
                 .findById(oldEntry.getId())
                 .orElseThrow(() -> new NoSuchElementException("Entry not found"));
@@ -37,6 +42,7 @@ public class ListEntryService {
         updatedEntry.setText(oldEntry.getText());
         updatedEntry.setImportance(oldEntry.getImportance());
         repository.save(updatedEntry);
+        return updatedEntry;
     }
 
     @Transactional

@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,5 +47,29 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
     user.setPassword(passwordEncoder.encode("1234"));
     return save(user);
   }
+
+    @Override
+    public User getUserByMail(String email) {
+      List<User> users = repository.findAll();
+      User user = null;
+        for (User userInList : users){
+            if(Objects.equals(userInList.getEmail(), email)){
+                user = userInList;
+            }
+        }
+        return user;
+    }
+
+    @Override
+    public boolean isUserAdmin(User user) {
+        boolean isAdmin = false;
+        for (Role role : user.getRoles()){
+            if(Objects.equals(role.getName(), "ADMIN")) {
+                isAdmin = true;
+                break;
+            }
+        }
+        return isAdmin;
+    }
 
 }
