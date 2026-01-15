@@ -7,4 +7,8 @@ public interface UserService extends UserDetailsService, AbstractService<User> {
   User register(User user);
 
   User registerUser(User user);
+
+  User getUserByMail(String email);
+
+  boolean isUserAdmin(User user);
 }

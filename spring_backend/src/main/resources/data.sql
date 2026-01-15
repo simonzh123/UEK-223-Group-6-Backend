@@ -40,7 +40,14 @@ VALUES ('d29e709c-0ff1-4f4c-a7ef-09f656c390f1', '2ebf301e-6c61-4076-98e3-2a38b31
 
 --ENTRIES
 INSERT INTO list_entry(id, title, text, importance, user_id, created_at)
-VALUES ('afa13c84-d3c2-4b37-96f4-b5e50b94601d', 'example 1.0', 'very important message!', 'HIGH', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
-       ('0ce10a45-644d-4500-ac1c-b867ca663d13', 'example 2.0', 'hello everyone', 'MEDIUM', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
-       ('be1732af-093e-496f-9c54-9aad6382f886', 'example 3.0', 'hello people, this is unimportant', 'LOW', 'ba804cb9-fa14-42a5-afaf-be488742fc54', now())
+VALUES
+    -- User 1 Entries (0d8fa44c-54fd-4cd0-ace9-2a7da57992de)
+    ('a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6', 'Project Deadline', 'Finish the API documentation by Friday.', 'HIGH', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
+    ('b2c3d4e5-f6a7-48b9-c0d1-e2f3a4b5c6d7', 'Grocery List', 'Milk, eggs, and coffee beans.', 'LOW', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
+    ('c3d4e5f6-a7b8-49c9-d0e1-f2a3b4c5d6e7', 'Team Sync', 'Discussion about the new sprint goals.', 'MEDIUM', '0d8fa44c-54fd-4cd0-ace9-2a7da57992de', now()),
+
+    -- User 2 Entries (ba804cb9-fa14-42a5-afaf-be488742fc54)
+    ('d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8', 'Security Update', 'Patch the production server vulnerabilities.', 'HIGH', 'ba804cb9-fa14-42a5-afaf-be488742fc54', now()),
+    ('e5f6a7b8-c9d0-4be1-f2a3-b4c5d6e7f8a9', 'Idea Scrapbook', 'Maybe build a CLI tool for this database?', 'MEDIUM', 'ba804cb9-fa14-42a5-afaf-be488742fc54', now()),
+    ('f6a7b8c9-d0e1-4cf2-a3b4-c5d6e7f8a9b0', 'Personal Reminder', 'Call the dentist for an appointment.', 'LOW', 'ba804cb9-fa14-42a5-afaf-be488742fc54', now())
     ON CONFLICT DO NOTHING;
