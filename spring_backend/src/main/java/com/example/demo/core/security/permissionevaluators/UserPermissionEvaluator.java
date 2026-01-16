@@ -31,4 +31,8 @@ public class UserPermissionEvaluator {
         }
   }
 
+  public boolean isThemselfEvaluator (User principal, UUID id) {
+        return principal.getId() == id;
+  }
+
 }
