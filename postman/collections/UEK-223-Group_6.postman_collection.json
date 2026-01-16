@@ -1,0 +1,1310 @@
+{
+  "info": {
+    "_postman_id": "e7c077e0-1ace-4d5d-949a-f5e1b9b32de0",
+    "name": "UEK-223-Group_6",
+    "description": "This collection contain multiple tests, testing happy paths, permissions and roles.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43313456"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Registration successful\", () => {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"example.user@gmail.com\",\n    \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            },
+            "description": "Register a new user with email and password. This is a public endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const authHeader = pm.response.headers.get(\"Authorization\");\r",
+                  "\r",
+                  "pm.environment.set(\"accessToken\", authHeader.replace(\"Bearer \", \"\"));\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            },
+            "description": "Authenticate a user and receive a JWT token. The token is returned in the Authorization header."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "const authHeader = pm.response.headers.get(\"Authorization\");\r",
+                  "\r",
+                  "pm.environment.set(\"AdminAccessToken\", authHeader.replace(\"Bearer \", \"\"));\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"admin@example.com\",\r\n    \"password\": \"1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Public authentication endpoints for login and registration."
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can fetch all users\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "  const body = pm.response.json();\r",
+                  "  pm.expect(body).to.be.an(\"array\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "Retrieve a list of all users. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Get All Users (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can't fetch all users\", () => {\r",
+                  "  pm.response.to.have.status(403);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "Retrieve a list of all users. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Get foreign User by ID (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can't fetch other single user\", () => {\r",
+                  "  pm.response.to.have.status(403);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ba804cb9-fa14-42a5-afaf-be488742fc54",
+                  "description": "UUID of the user to retrieve"
+                }
+              ]
+            },
+            "description": "Retrieve a specific user by their UUID. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get own User by ID (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can fetch themselves\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "    pm.response.to.have.jsonBody({\r",
+                  "        \"id\": pm.expect.string,\r",
+                  "        \"firstName\": pm.expect.string,\r",
+                  "        \"lastName\": pm.expect.string,\r",
+                  "        \"email\": pm.expect.string,\r",
+                  "        \"roles\": pm.expect.array\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0d8fa44c-54fd-4cd0-ace9-2a7da57992de",
+                  "description": "UUID of the user to retrieve"
+                }
+              ]
+            },
+            "description": "Retrieve a specific user by their UUID. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Register User without password (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can be created without password\", () => {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "\r",
+                  "  const body = pm.response.json();\r",
+                  "\r",
+                  "  pm.expect(body).to.have.property(\"id\");\r",
+                  "  pm.expect(body.id).to.be.a(\"string\");\r",
+                  "});\r",
+                  "\r",
+                  "const body = pm.response.json();\r",
+                  "pm.environment.set(\"createdUserId\", body.id);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"example\",\n    \"lastName\": \"example\",\n    \"email\": \"example.hello@example.com\",\n    \"roles\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/registerUser",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "registerUser"
+              ]
+            },
+            "description": "Register a new user without providing a password. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update other User (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Users can't update other users\", () => {\r",
+                  "  pm.response.to.have.status(403);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"Tyler\",\n    \"lastName\": \"Updated\",\n    \"email\": \"user@example.com\",\n    \"roles\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0d8fa44c-54fd-4cd0-ace9-2a7da57992de",
+                  "description": "UUID of the user to update"
+                }
+              ]
+            },
+            "description": "Update an existing user by their UUID. Requires authentication and USER_MODIFY authority. Users can only modify their own profile."
+          },
+          "response": []
+        },
+        {
+          "name": "Update self (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can update themselves\", () => {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "    pm.response.to.have.jsonBody({\r",
+                  "        \"id\": pm.expect.string,\r",
+                  "        \"firstName\": pm.expect.string,\r",
+                  "        \"lastName\": pm.expect.string,\r",
+                  "        \"email\": pm.expect.string,\r",
+                  "        \"roles\": pm.expect.array\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"Tyler\",\n    \"lastName\": \"Updated\",\n    \"email\": \"user@example.com\",\n    \"roles\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0d8fa44c-54fd-4cd0-ace9-2a7da57992de",
+                  "description": "UUID of the user to update"
+                }
+              ]
+            },
+            "description": "Update an existing user by their UUID. Requires authentication and USER_MODIFY authority. Users can only modify their own profile."
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Delete User (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User can't delete other users\", () => {\r",
+                  "  pm.response.to.have.status(403);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "b0526d20-9d3a-43a7-9b6b-60e48517f8fc",
+                  "description": "UUID of the user to delete"
+                }
+              ]
+            },
+            "description": "Delete a user by their UUID. Requires authentication and USER_DEACTIVATE authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can delete Users\", () => {\r",
+                  "  pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{createdUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{createdUserId}}"
+              ]
+            },
+            "description": "Delete a user by their UUID. Requires authentication and USER_DEACTIVATE authority."
+          },
+          "response": []
+        }
+      ],
+      "description": "User management endpoints. Most require authentication."
+    },
+    {
+      "name": "Entries",
+      "item": [
+        {
+          "name": "Get Single own Entry by ID (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"All users can get their own entry by ID\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body.id).to.be.a(\"string\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "\r",
+                  "    pm.environment.set(\"listEntryId\", body.id);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single foreign Entry by ID (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can get a single foreign entry by ID\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body.id).to.be.a(\"string\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "\r",
+                  "    pm.environment.set(\"listEntryId\", body.id);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Get Single foreign Entry by ID (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Normal users can't get a foreign entry by ID\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0635df20-8e2c-4423-bf74-93f336796197"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Entries (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can get all list entries\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.be.an(\"array\");\r",
+                  "\r",
+                  "    if (body.length > 0) {\r",
+                  "        pm.expect(body[0]).to.have.property(\"id\");\r",
+                  "        pm.expect(body[0]).to.have.property(\"title\");\r",
+                  "        pm.expect(body[0]).to.have.property(\"text\");\r",
+                  "        pm.expect(body[0]).to.have.property(\"importance\");\r",
+                  "        pm.expect(body[0]).to.have.property(\"user\");\r",
+                  "        pm.expect(body[0].user).to.have.property(\"id\");\r",
+                  "    }\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Get All Entries (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Normal user can't get all list entries\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ],
+              "query": [
+                {
+                  "key": "",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update foreign Entry (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User cannot update another users entry\", () => {\r",
+                  "    if(pm.response.code === 403){\r",
+                  "        pm.expect(pm.response.code).to.eql(403);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update foreign Entry (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can update foreign entry\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update own Entry (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"All Users can update own entry\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Entry (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"All Users can create an entry\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete own Entry (all users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"All users can delete own entry\", () => {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "afa13c84-d3c2-4b37-96f4-b5e50b94601d"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Delete foreign Entry (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Users can't delete foreign entry\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "d4e5f6a7-b8c9-4ad0-e1f2-a3b4c5d6e7f8"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete foreign Entry (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admins can delete foreign entry\", () => {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "a1b2c3d4-e5f6-47a8-b9c0-d1e2f3a4b5c6"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Collection-level test script - runs after each request",
+          "pm.test('Response time is under 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "// Log failing requests for debugging",
+          "if (pm.response.code >= 400) {",
+          "    console.log('Request failed: ' + pm.info.requestName + ' - Status: ' + pm.response.code);",
+          "}",
+          "",
+          "// Log slow requests",
+          "if (pm.response.responseTime >= 1500) {",
+          "    console.log('Slow request: ' + pm.info.requestName + ' - Time: ' + pm.response.responseTime + 'ms');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "accessToken",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9DUkVBVEUifV0sInN1YiI6IjBkOGZhNDRjLTU0ZmQtNGNkMC1hY2U5LTJhN2RhNTc5OTJkZSIsImlhdCI6MTc2ODU2MTEzMywiZXhwIjoxNzY4NjYxMTMzLCJpc3MiOiJ1azIyMyJ9._DLXnPQDwzx3CdGRojR0N_QaxTFzsiadrwOybR_vUNtrHdjkroJju0d7KKHg8LV9"
+    },
+    {
+      "key": "AdminAccessToken",
+      "value": "eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn0seyJhdXRob3JpdHkiOiJVU0VSX0NSRUFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn1dLCJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJpYXQiOjE3Njg0NzI5MTYsImV4cCI6MTc2ODU3MjkxNiwiaXNzIjoidWsyMjMifQ.oM-rJkyz2aaxyHRtfjZMLhmUSJWTt9O4YnOmyDgmUXwLJe7AlQi8nvjOJDQh1Hwm"
+    }
+  ]
+}
