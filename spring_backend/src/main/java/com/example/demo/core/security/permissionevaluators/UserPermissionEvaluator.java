@@ -23,15 +23,9 @@ public class UserPermissionEvaluator {
     return true;
   }
 
-  public boolean isOwnEntryOrIsAdminEvaluator (User principal, UUID id) {
+  public boolean isOwnEntryEvaluator (User principal, UUID id) {
         try {
-            for (Role role : principal.getRoles()){
-                if(Objects.equals(role.getName(), "ADMIN")){
-                    return true;
-                }
-            }
             return Objects.equals(principal.getId(), listEntryService.getEntryById(id).getUser().getId());
-
         } catch (Exception e){
             return false;
         }

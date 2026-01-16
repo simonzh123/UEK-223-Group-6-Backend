@@ -41,7 +41,7 @@ public class ListEntryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER_READ') || @userPermissionEvaluator.isOwnEntryOrIsAdminEvaluator(authentication.principal.user,#id)")
+    @PreAuthorize("hasAuthority('USER_READ') || @userPermissionEvaluator.isOwnEntryEvaluator(authentication.principal.user,#id)")
     public ResponseEntity<ListEntryDTO> getEntryById(@PathVariable UUID id) {
         try {
             ListEntry entry = entryService.getEntryById(id);
@@ -58,7 +58,7 @@ public class ListEntryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER_MODIFY') || @userPermissionEvaluator.isOwnEntryOrIsAdminEvaluator(authentication.principal.user,#id)")
+    @PreAuthorize("hasAuthority('USER_READ') || @userPermissionEvaluator.isOwnEntryEvaluator(authentication.principal.user,#id)")
     public ResponseEntity<ListEntryDTO> updateEntry(@PathVariable UUID id, @RequestBody @Valid ListEntryDTO entryDTO) {
         try {
             ListEntry entryToUpdate = entryMapper.fromDTO(entryDTO);
