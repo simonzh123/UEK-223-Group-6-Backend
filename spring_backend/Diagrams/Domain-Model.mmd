@@ -1,7 +1,7 @@
 classDiagram
     User <|-- ListEntry : created by
-    User --|> Authority : has Authority
-    Roles --|> Authority : has role
+    User --|> Role : has Role
+    Role --|> Authority : has Authority
 
     class User{
         +email
@@ -14,9 +14,10 @@ classDiagram
       +title
       +text
       +importance
+      +creationDate
     }
 
-    class Roles{
+    class Role{
       +name
     }
 
