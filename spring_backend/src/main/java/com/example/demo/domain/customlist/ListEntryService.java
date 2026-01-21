@@ -44,12 +44,10 @@ public class ListEntryService extends AbstractServiceImpl<ListEntry> {
         return updatedEntry;
     }
 
-    @Transactional
     public void deleteEntryById(UUID id) {
         repository.deleteById(id);
     }
 
-    @Transactional
     public ListEntry saveEntry(ListEntry listEntry) {
         return save(listEntry);
     }
