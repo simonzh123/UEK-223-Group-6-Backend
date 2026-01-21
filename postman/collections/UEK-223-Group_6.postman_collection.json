@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "e7c077e0-1ace-4d5d-949a-f5e1b9b32de0",
+    "_postman_id": "f9d72fff-7c04-409c-b32b-74df1b7476b5",
     "name": "UEK-223-Group_6",
     "description": "Auto-discovered API endpoints from Spring Boot backend (UEK-223-Group-6-Backend). This collection contains all HTTP routes found in the UserController.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -67,7 +67,7 @@
                   "\r",
                   "const authHeader = pm.response.headers.get(\"Authorization\");\r",
                   "\r",
-                  "pm.environment.set(\"accsessToken\", authHeader.replace(\"Bearer \", \"\"));\r",
+                  "pm.environment.set(\"accessToken\", authHeader.replace(\"Bearer \", \"\"));\r",
                   ""
                 ],
                 "type": "text/javascript",
