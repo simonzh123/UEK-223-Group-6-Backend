@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @AllArgsConstructor
+@Log4j2
 public class CustomGlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseError handleAccessDenied(AccessDeniedException e) {
+    public ResponseError handleAccessDenied() {
         Map<String, String> errors = new HashMap<>();
         errors.put("authorization", "Access Denied");
+        log.warn("User tried unauthorized action.");
         return new ResponseError()
                 .setTimeStamp(LocalDate.now())
                 .setErrors(errors)
@@ -35,7 +37,7 @@ public class CustomGlobalExceptionHandler {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-  public ResponseError handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest request) {
+  public ResponseError handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
     return new ResponseError().setTimeStamp(LocalDate.now())
                               .setErrors(ex.getBindingResult()
                                            .getFieldErrors()
@@ -54,6 +56,17 @@ public class CustomGlobalExceptionHandler {
                               .setErrors(errors)
                               .build();
   }
+
+    @ExceptionHandler({NoSuchListEntryException.class})
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ResponseError handleNoSuchListEntry(Throwable e) {
+        Map<String, String> errors = new HashMap<>();
+        log.warn(e.getMessage());
+        errors.put("id", e.getMessage());
+        return new ResponseError().setTimeStamp(LocalDate.now())
+                .setErrors(errors)
+                .build();
+    }
 
   @ExceptionHandler({UsernameNotFoundException.class})
   @ResponseStatus(value = HttpStatus.NOT_FOUND)

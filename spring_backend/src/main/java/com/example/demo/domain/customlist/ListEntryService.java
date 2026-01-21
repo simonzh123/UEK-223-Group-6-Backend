@@ -1,5 +1,6 @@
 package com.example.demo.domain.customlist;
 
+import com.example.demo.core.exception.NoSuchListEntryException;
 import com.example.demo.domain.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class ListEntryService extends AbstractServiceImpl<ListEntry> {
         return repository.findAll();
     }
 
-    public ListEntry getEntryById(UUID id) throws Exception {
-        return repository.findById(id).orElseThrow(Exception::new);
+    public ListEntry getEntryById(UUID id) throws NoSuchListEntryException {
+        return repository.findById(id).orElseThrow(() -> new NoSuchListEntryException(id));
     }
 
     public List<ListEntry> getEntriesByUser(String email) {
@@ -36,7 +37,7 @@ public class ListEntryService extends AbstractServiceImpl<ListEntry> {
     public ListEntry updateEntry(ListEntry oldEntry) throws NoSuchElementException {
         ListEntry updatedEntry = repository
                 .findById(oldEntry.getId())
-                .orElseThrow(() -> new NoSuchElementException("Entry not found"));
+                .orElseThrow(() -> new NoSuchListEntryException(oldEntry.getId()));
         updatedEntry.setTitle(oldEntry.getTitle());
         updatedEntry.setText(oldEntry.getText());
         updatedEntry.setImportance(oldEntry.getImportance());

@@ -1,10 +1,10 @@
 package com.example.demo.domain.customlist;
 
+import com.example.demo.core.exception.NoSuchListEntryException;
 import com.example.demo.domain.customlist.dto.ListEntryDTO;
 import com.example.demo.domain.customlist.dto.ListEntryMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Validated
 @RestController
-@Log4j2
 @RequestMapping("/list-entries")
 public class ListEntryController {
 
@@ -44,13 +42,9 @@ public class ListEntryController {
     @GetMapping("/{id}")
     @Operation(summary = "Show a single entry", description = "Show one entry identified by its id")
     @PreAuthorize("hasAuthority('USER_READ') || @userPermissionEvaluator.isOwnEntryEvaluator(authentication.principal.user,#id)")
-    public ResponseEntity<ListEntryDTO> getEntryById(@PathVariable UUID id) {
-        try {
+    public ResponseEntity<ListEntryDTO> getEntryById(@PathVariable UUID id) throws NoSuchListEntryException {
             ListEntry entry = entryService.getEntryById(id);
             return new ResponseEntity<>(entryMapper.toDTO(entry), HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @GetMapping("/user")
@@ -64,16 +58,10 @@ public class ListEntryController {
     @Operation(summary = "Update an entry", description = "Update an entry based on its id")
     @PreAuthorize("@userPermissionEvaluator.isOwnEntryEvaluator(authentication.principal.user,#id)")
     public ResponseEntity<ListEntryDTO> updateEntry(@PathVariable UUID id, @RequestBody @Valid ListEntryDTO entryDTO) {
-        try {
             ListEntry entryToUpdate = entryMapper.fromDTO(entryDTO);
             entryToUpdate.setId(id);
             ListEntry updated = entryService.updateEntry(entryToUpdate);
             return ResponseEntity.ok(entryMapper.toDTO(updated));
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
     }
 
     @PostMapping
