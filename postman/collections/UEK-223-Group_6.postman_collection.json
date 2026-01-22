@@ -1,11 +1,10 @@
 {
   "info": {
-    "_postman_id": "6494b7a9-41b4-4856-915e-a49f8717525b",
+    "_postman_id": "2383dabc-0929-4e59-bb30-29d5560421f7",
     "name": "UEK-223-Group_6",
     "description": "Auto-discovered API endpoints from Spring Boot backend (UEK-223-Group-6-Backend). This collection contains all HTTP routes found in the UserController.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "43313961",
-    "_collection_link": "https://go.postman.co/collection/43313961-6494b7a9-41b4-4856-915e-a49f8717525b?source=collection_link"
+    "_exporter_id": "43313456"
   },
   "item": [
     {
@@ -40,6 +39,57 @@
             "body": {
               "mode": "raw",
               "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"example.user@gmail.com\",\n    \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            },
+            "description": "Register a new user with email and password. This is a public endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Register invalid body format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Registration unsuccessful due to invalid e-mail\", () => {\r",
+                  "  pm.response.to.have.status(400);\r",
+                  "\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"email\", \"muss eine korrekt formatierte E-Mail-Adresse sein\");\r",
+                  "});\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"wont_work\",\n    \"password\": \"securePassword123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/user/register",
@@ -163,13 +213,357 @@
       "name": "Entries",
       "item": [
         {
-          "name": "Get Single own Entry by ID (all users)",
+          "name": "Create New Entry (normal user)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"All users can get their own entry by ID\", () => {\r",
+                  "pm.test(\"Normal user can create an entry\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "\r",
+                  "    pm.environment.set(\"userEntryId\", body.id);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Entry (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can create an entry\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "\r",
+                  "    pm.environment.set(\"adminEntryId\", body.id);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create foreign Entry -> will turn to be own entry (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Entry for foreign user gets mapped to admin user\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "    const response = pm.response.json();\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "    pm.expect(response.user.id).to.eql(pm.environment.get(\"adminUserId\"));\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\" // id of different user\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create foreign Entry -> will turn to be own entry (user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Entry for foreign user gets mapped to current user\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "    const response = pm.response.json();\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "    pm.expect(body.user).to.have.property(\"id\");\r",
+                  "    pm.expect(body).to.have.property(\"createdAt\");\r",
+                  "    pm.expect(response.user.id).to.eql(pm.environment.get(\"normalUserId\"));\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"ba804cb9-fa14-42a5-afaf-be488742fc54\" // id of different user\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Create New Entry with invalid body (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Create New Entry with invalid body (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"ba804cb9-fa14-42a5-afaf-be488742fc54\"\r\n  }\r\n}\r\n\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single own Entry by ID (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Normal user can get their own entry by ID\", () => {\r",
                   "    pm.response.to.have.status(200);\r",
                   "\r",
                   "    const body = pm.response.json();\r",
@@ -179,8 +573,6 @@
                   "    pm.expect(body).to.have.property(\"text\");\r",
                   "    pm.expect(body).to.have.property(\"importance\");\r",
                   "    pm.expect(body).to.have.property(\"user\");\r",
-                  "\r",
-                  "    pm.environment.set(\"listEntryId\", body.id);\r",
                   "});\r",
                   ""
                 ],
@@ -200,13 +592,61 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{entryId}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{entryId}}"
+                "{{userEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single own Entry by ID (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"All users can get their own entry by ID\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "\r",
+                  "    const body = pm.response.json();\r",
+                  "    pm.expect(body).to.have.property(\"id\");\r",
+                  "    pm.expect(body.id).to.be.a(\"string\");\r",
+                  "    pm.expect(body).to.have.property(\"title\");\r",
+                  "    pm.expect(body).to.have.property(\"text\");\r",
+                  "    pm.expect(body).to.have.property(\"importance\");\r",
+                  "    pm.expect(body).to.have.property(\"user\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{adminEntryId}}"
               ]
             }
           },
@@ -229,8 +669,6 @@
                   "    pm.expect(body).to.have.property(\"text\");\r",
                   "    pm.expect(body).to.have.property(\"importance\");\r",
                   "    pm.expect(body).to.have.property(\"user\");\r",
-                  "\r",
-                  "    pm.environment.set(\"listEntryId\", body.id);\r",
                   "});\r",
                   ""
                 ],
@@ -250,13 +688,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{entryId}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{entryId}}"
+                "{{userEntryId}}"
               ]
             }
           },
@@ -369,8 +807,10 @@
                 "exec": [
                   "pm.test(\"Normal user can't get all list entries\", () => {\r",
                   "    pm.response.to.have.status(403);\r",
-                  "});\r",
-                  ""
+                  "    pm.expect(pm.response.json()).to.have.property('timeStamp').that.is.a('string');\r",
+                  "    pm.expect(pm.response.json()).to.have.property('errors').that.is.an('object');\r",
+                  "    pm.expect(pm.response.json().errors).to.have.property('authorization', 'Access Denied');\r",
+                  "});"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -415,9 +855,10 @@
               "script": {
                 "exec": [
                   "pm.test(\"User cannot update another users entry\", () => {\r",
-                  "    if(pm.response.code === 403){\r",
-                  "        pm.expect(pm.response.code).to.eql(403);\r",
-                  "    }\r",
+                  "    pm.expect(pm.response.code).to.eql(403);\r",
+                  "    pm.expect(pm.response.json()).to.have.property('timeStamp').that.is.a('string');\r",
+                  "    pm.expect(pm.response.json()).to.have.property('errors').that.is.an('object');\r",
+                  "    pm.expect(pm.response.json().errors).to.have.property('authorization', 'Access Denied');\r",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -445,13 +886,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{idToUpdate}}",
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{idToUpdate}}"
+                "{{adminEntryId}}"
               ]
             }
           },
@@ -466,7 +907,9 @@
                 "exec": [
                   "pm.test(\"Admin can't update foreign entry\", () => {\r",
                   "    pm.response.to.have.status(403);\r",
-                  "    const body = pm.response.json();\r",
+                  "    pm.expect(pm.response.json()).to.have.property('timeStamp').that.is.a('string');\r",
+                  "    pm.expect(pm.response.json()).to.have.property('errors').that.is.an('object');\r",
+                  "    pm.expect(pm.response.json().errors).to.have.property('authorization', 'Access Denied');\r",
                   "});\r",
                   ""
                 ],
@@ -495,20 +938,244 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{adminIdToUpdate}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{adminIdToUpdate}}"
+                "{{userEntryId}}"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Update own Entry (all users)",
+          "name": "[N] Update own entry with invalid body (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"ba804cb9-fa14-42a5-afaf-be488742fc54\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{adminEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update own entry with invalid body (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{userEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update foreign entry with invalid body (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"ba804cb9-fa14-42a5-afaf-be488742fc54\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{userEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[N] Update foreign entry with invalid body (normal user)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Validation Error Response\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "    const body = pm.response.json();\r",
+                  "\r",
+                  "    pm.expect(body).to.have.property(\"timeStamp\");\r",
+                  "    pm.expect(body).to.have.property(\"errors\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"title\", \"Title must contain at least 3 characters\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"text\", \"Text can't be blank\");\r",
+                  "    pm.expect(body.errors).to.have.property(\"importance\", \"Importance must be set\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"a\", // must contain 3 letters at least\r\n  \"text\": \"\", // blank\r\n  // missing importance field\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{adminEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update own Entry (normal user)",
           "event": [
             {
               "listen": "test",
@@ -556,7 +1223,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}",
+              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"{{normalUserId}}\"\r\n  }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -564,27 +1231,27 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{listEntryId}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{listEntryId}}"
+                "{{userEntryId}}"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Create New Entry (all users)",
+          "name": "Update own Entry (admin)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"All Users can create an entry\", () => {\r",
-                  "    pm.response.to.have.status(201);\r",
+                  "pm.test(\"Admin can update own entry\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
                   "    const body = pm.response.json();\r",
                   "\r",
                   "    pm.expect(body).to.have.property(\"id\");\r",
@@ -601,20 +1268,31 @@
                 "packages": {},
                 "requests": {}
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
             }
           ],
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
+                "value": "Bearer {{AdminAccessToken}}",
                 "type": "text"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"title\": \"New Test Entry\",\r\n  \"text\": \"This is a new entry for testing.\",\r\n  \"importance\": \"HIGH\",\r\n  \"user\": {\r\n    \"id\": \"0d8fa44c-54fd-4cd0-ace9-2a7da57992de\"\r\n  }\r\n}\r\n\r\n",
+              "raw": "{\r\n  \"title\": \"Updated Test Entry\",\r\n  \"text\": \"updated text\",\r\n  \"importance\": \"MEDIUM\",\r\n  \"user\": {\r\n    \"id\": \"{{adminUserId}}\"\r\n  }\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -622,25 +1300,26 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/list-entries",
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "list-entries"
+                "list-entries",
+                "{{adminEntryId}}"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Delete own Entry (all users)",
+          "name": "Delete own Entry (normal user)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"All users can delete own entry\", () => {\r",
+                  "pm.test(\"Normal users can delete own entry\", () => {\r",
                   "    pm.response.to.have.status(204);\r",
                   "});\r",
                   ""
@@ -661,13 +1340,53 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{idToDelete}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{idToDelete}}"
+                "{{userEntryId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete own Entry (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Admin can delete own entry\", () => {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{AdminAccessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "list-entries",
+                "{{adminEntryId}}"
               ]
             }
           },
@@ -701,13 +1420,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{foreignIdToDelete}}",
+              "raw": "{{baseUrl}}/list-entries/{{adminEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{foreignIdToDelete}}"
+                "{{adminEntryId}}"
               ]
             }
           },
@@ -741,13 +1460,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/list-entries/{{adminIdToDelete}}",
+              "raw": "{{baseUrl}}/list-entries/{{userEntryId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "list-entries",
-                "{{adminIdToDelete}}"
+                "{{userEntryId}}"
               ]
             }
           },
@@ -870,20 +1589,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/user/:id",
+              "raw": "{{baseUrl}}/user/{{adminUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "user",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "ba804cb9-fa14-42a5-afaf-be488742fc54",
-                  "description": "UUID of the user to retrieve"
-                }
+                "{{adminUserId}}"
               ]
             },
             "description": "Retrieve a specific user by their UUID. Requires authentication."
@@ -923,20 +1635,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/user/:id",
+              "raw": "{{baseUrl}}/user/{{normalUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "user",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "0d8fa44c-54fd-4cd0-ace9-2a7da57992de",
-                  "description": "UUID of the user to retrieve"
-                }
+                "{{normalUserId}}"
               ]
             },
             "description": "Retrieve a specific user by their UUID. Requires authentication."
@@ -1033,13 +1738,13 @@
               "raw": "{\n    \"firstName\": \"Admin\",\n    \"lastName\": \"Updated\",\n    \"email\": \"admin@example.com\",\n    \"roles\": []\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/user/{{foreignIdToUpdate}}",
+              "raw": "{{baseUrl}}/user/{{adminUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "user",
-                "{{foreignIdToUpdate}}"
+                "{{adminUserId}}"
               ]
             },
             "description": "Update an existing user by their UUID. Requires authentication and USER_MODIFY authority. Users can only modify their own profile."
@@ -1141,20 +1846,13 @@
               "raw": "{\n    \"firstName\": \"Tyler\",\n    \"lastName\": \"Updated\",\n    \"email\": \"user@example.com\",\n    \"roles\": []\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/user/:id",
+              "raw": "{{baseUrl}}/user/{{normalUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "user",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "0d8fa44c-54fd-4cd0-ace9-2a7da57992de",
-                  "description": "UUID of the user to update"
-                }
+                "{{normalUserId}}"
               ]
             },
             "description": "Update an existing user by their UUID. Requires authentication and USER_MODIFY authority. Users can only modify their own profile."
@@ -1188,20 +1886,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/user/:id",
+              "raw": "{{baseUrl}}/user/{{createdUserId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "user",
-                ":id"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "b0526d20-9d3a-43a7-9b6b-60e48517f8fc",
-                  "description": "UUID of the user to delete"
-                }
+                "{{createdUserId}}"
               ]
             },
             "description": "Delete a user by their UUID. Requires authentication and USER_DEACTIVATE authority."
