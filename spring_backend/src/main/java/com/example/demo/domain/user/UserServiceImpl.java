@@ -9,10 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends AbstractServiceImpl<User> implements UserService {
@@ -58,6 +55,15 @@ public class UserServiceImpl extends AbstractServiceImpl<User> implements UserSe
             }
         }
         return user;
+    }
+
+    @Override
+    public User updateUserById(UUID id, User newUser) {
+      User updatingUser = repository.findById(id).orElseThrow(NoSuchElementException::new);
+      updatingUser.setEmail(newUser.getEmail());
+      updatingUser.setFirstName(newUser.getFirstName());
+      updatingUser.setLastName(newUser.getLastName());
+      return repository.save(updatingUser);
     }
 
     @Override
