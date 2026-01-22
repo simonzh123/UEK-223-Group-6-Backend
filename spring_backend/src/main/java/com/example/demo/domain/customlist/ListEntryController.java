@@ -37,12 +37,17 @@ public class ListEntryController {
     @GetMapping
     @Operation(summary = "Show all entries", description = "Show all entries with their owner")
     @PreAuthorize("hasAuthority('USER_READ')")
-    public ResponseEntity<List<ListEntryDTO>> getAllEntries(@RequestParam(value = "page", required = false) Integer page) {
+    public ResponseEntity<List<ListEntryDTO>> getAllEntries(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "importance", required = false) String importance,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "userId", required = false) UUID userId,
+            @RequestParam(value = "isAscending", required = false) Boolean isAscending) {
         List<ListEntry> entries;
         if (page == null) {
-            entries = entryService.getAllEntries(Optional.empty());
+            entries = entryService.getAllEntries(Optional.empty(), importance, sortBy, isAscending, userId);
         } else {
-            entries = entryService.getAllEntries(Optional.of(page));
+            entries = entryService.getAllEntries(Optional.of(page), importance, sortBy, isAscending, userId);
         }
         return new ResponseEntity<>(entryMapper.toDTOs(entries), HttpStatus.OK);
     }
@@ -65,9 +70,11 @@ public class ListEntryController {
 
     @GetMapping("/user")
     @Operation(summary = "Show all entries of one user")
-    public ResponseEntity<List<ListEntryDTO>> getEntriesByUser(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "importance", required = false) String importance,
-                                                               @RequestParam(value = "sortBy", required = false) String sortBy,
-                                                               @RequestParam(value = "isAscending", required = false) Boolean isAscending) {
+    public ResponseEntity<List<ListEntryDTO>> getEntriesByUser(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "importance", required = false) String importance,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "isAscending", required = false) Boolean isAscending) {
         List<ListEntry> entries;
         if (page == null) {
             entries = entryService.getEntriesByUser(getMailFromJWT(), Optional.empty(), importance, sortBy, isAscending);

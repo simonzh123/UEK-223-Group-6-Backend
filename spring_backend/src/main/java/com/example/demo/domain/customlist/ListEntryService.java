@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class ListEntryService extends AbstractServiceImpl<ListEntry> {
 
-    private final  UserService userService;
+    private final UserService userService;
     private final ListEntryRepository repository;
 
     public ListEntryService(UserService userService, ListEntryRepository repository) {
@@ -22,8 +22,8 @@ public class ListEntryService extends AbstractServiceImpl<ListEntry> {
         this.userService = userService;
     }
 
-    public List<ListEntry> getAllEntries(Optional<Integer> page) {
-        return repository.findAll(PageRequest.of(page.orElse(0), 10)).getContent();
+    public List<ListEntry> getAllEntries(Optional<Integer> page, String importance, String sortBy, Boolean isAscending, UUID userId) {
+        return queryEntries(Optional.ofNullable(userId), page, importance, sortBy, isAscending);
     }
 
     public ListEntry getEntryById(UUID id) throws NoSuchListEntryException {
@@ -40,32 +40,53 @@ public class ListEntryService extends AbstractServiceImpl<ListEntry> {
 
     public List<ListEntry> getEntriesByUser(String email, Optional<Integer> page, String importance, String sortBy, Boolean isAscending) {
         UUID userId = userService.getUserByMail(email).getId();
+        return queryEntries(Optional.of(userId), page, importance, sortBy, isAscending);
+    }
 
-
+    private List<ListEntry> queryEntries(Optional<UUID> userId,
+                                         Optional<Integer> page,
+                                         String importance,
+                                         String sortBy,
+                                         Boolean isAscending) {
         String property = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy;
         if ("user".equalsIgnoreCase(property)) {
             property = "user.lastName";
         }
 
         if ("importance".equalsIgnoreCase(property)) {
-            List<ListEntry> data = repository.findAllByUserId(userId, importance, Sort.unsorted());
-
-            Map<ListEntry.Importance, Integer> rank = new HashMap<>();
-            rank.put(ListEntry.Importance.LOW, 0);
-            rank.put(ListEntry.Importance.MEDIUM, 1);
-            rank.put(ListEntry.Importance.HIGH, 2);
-
-            Comparator<ListEntry> cmp = Comparator.comparing(e -> rank.getOrDefault(e.getImportance(), 0));
-
-            if (isAscending == null || !isAscending) {
-                cmp = cmp.reversed();
+            if (userId.isPresent()) {
+                List<ListEntry> data = repository.findAllByUserId(userId.get(), ListEntry.Importance.valueOf(importance), Sort.unsorted());
+                Map<ListEntry.Importance, Integer> rank = new HashMap<>();
+                rank.put(ListEntry.Importance.LOW, 0);
+                rank.put(ListEntry.Importance.MEDIUM, 1);
+                rank.put(ListEntry.Importance.HIGH, 2);
+                Comparator<ListEntry> cmp = Comparator.comparing(e -> rank.getOrDefault(e.getImportance(), 0));
+                if (isAscending == null || !isAscending) {
+                    cmp = cmp.reversed();
+                }
+                data.sort(cmp);
+                return data;
+            } else {
+                List<ListEntry> data = repository.findAllByImportance(ListEntry.Importance.valueOf(importance), Sort.unsorted());
+                Map<ListEntry.Importance, Integer> rank = new HashMap<>();
+                rank.put(ListEntry.Importance.LOW, 0);
+                rank.put(ListEntry.Importance.MEDIUM, 1);
+                rank.put(ListEntry.Importance.HIGH, 2);
+                Comparator<ListEntry> cmp = Comparator.comparing(e -> rank.getOrDefault(e.getImportance(), 0));
+                if (isAscending == null || !isAscending) {
+                    cmp = cmp.reversed();
+                }
+                data.sort(cmp);
+                return data;
             }
-
-            data.sort(cmp);
-            return data;
         }
+
         Sort sort = (isAscending != null && isAscending) ? Sort.by(property).ascending() : Sort.by(property).descending();
-        return repository.findAllByUserId(userId, PageRequest.of(page.orElse(0), 10), importance, sort);
+        PageRequest pageable = PageRequest.of(page.orElse(0), 10, sort);
+        if (userId.isPresent()) {
+            return repository.findAllByUserIdPageable(userId.get(), importance, pageable).getContent();
+        }
+        return repository.findAllPageable(importance, pageable).getContent();
     }
 
     @Transactional
