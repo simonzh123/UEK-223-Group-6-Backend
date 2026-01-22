@@ -17,15 +17,14 @@ import java.time.LocalDateTime;
 @Getter
 @Accessors(chain = true)
 public class ListEntryDTO extends AbstractDTO {
-    @NotBlank
-    @Size(min = 3)
+    @NotBlank(message = "Title can't be blank")
+    @Size(min = 3, message = "Title must contain at least 3 characters")
     private String title;
-    @NotBlank
-    @Size(max = 500)
+    @NotBlank(message = "Text can't be blank")
+    @Size(max = 500, message = "Text can contain 500 characters at max")
     private String text;
-    @NotNull
+    @NotNull(message = "Importance must be set")
     private ListEntry.Importance importance;
-    @NotNull
     private UserDTO user;
     private LocalDateTime createdAt;
 }

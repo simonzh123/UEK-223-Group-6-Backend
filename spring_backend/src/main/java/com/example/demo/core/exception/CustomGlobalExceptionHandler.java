@@ -35,17 +35,22 @@ public class CustomGlobalExceptionHandler {
                 .build();
     }
 
-  @ExceptionHandler(MethodArgumentNotValidException.class)
-  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-  public ResponseError handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-    return new ResponseError().setTimeStamp(LocalDate.now())
-                              .setErrors(ex.getBindingResult()
-                                           .getFieldErrors()
-                                           .stream()
-                                           .collect(Collectors.toMap(FieldError::getField,
-                                               DefaultMessageSourceResolvable::getDefaultMessage)))
-                              .build();
-  }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return new ResponseError()
+                .setTimeStamp(LocalDate.now())
+                .setErrors(
+                        ex.getBindingResult()
+                                .getFieldErrors()
+                                .stream()
+                                .collect(Collectors.toMap(
+                                        FieldError::getField,
+                                        DefaultMessageSourceResolvable::getDefaultMessage,
+                                        (m1, m2) -> m1
+                                ))
+                );
+    }
 
   @ExceptionHandler({NoSuchElementException.class})
   @ResponseStatus(value = HttpStatus.NOT_FOUND)
