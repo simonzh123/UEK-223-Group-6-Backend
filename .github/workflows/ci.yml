@@ -2,22 +2,26 @@ name: CI - Backend Build & Push
 
 on:
   push:
-    branches: [ simon-docker ]
+    branches:
+      - simon-docker
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.actor }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
@@ -25,4 +29,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/list-backend:latest,${{ secrets.DOCKERHUB_USERNAME }}/list-backend:${{ github.sha }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/list-backend:latest
+            ghcr.io/${{ github.repository_owner }}/list-backend:${{ github.sha }}
