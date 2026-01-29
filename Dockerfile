@@ -1,7 +1,7 @@
 # Set up the build environment using the Gradle image with JDK 17
 FROM gradle:8.10.2-jdk17 AS build
 # Copy the project files to the /home/gradle/src directory
-COPY --chown=gradle:gradle . /home/gradle/src
+COPY --chown=gradle:gradle spring_backend /home/gradle/src
 # Set the working directory to /home/gradle/src
 WORKDIR /home/gradle/src
 # Build the Spring Boot application using Gradle
