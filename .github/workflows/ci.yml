@@ -2,7 +2,7 @@ name: CI - Backend Build & Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ simon-docker ]
 
 jobs:
   build:
